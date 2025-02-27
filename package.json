@@ -1,0 +1,65 @@
+{
+  "homepage": ".",
+  "name": "react-typescript-starter-pack",
+  "version": "0.1.0",
+  "type": "module",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.5.1",
+    "axios": "^1.7.9",
+    "bulma": "^0.9.4",
+    "classnames": "^2.3.2",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "pg": "^8.13.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1",
+    "react-transition-group": "^4.4.5",
+    "typescript": "^4.6.3",
+    "typescript-eslint-parser": "^22.0.0",
+    "uuid": "^11.0.5",
+    "web-vitals": "^1.1.1"
+  },
+  "scripts": {
+    "format": "prettier --write './src/**/*.{ts,tsx}'",
+    "lint": "npm run format && eslint ./src --fix",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
+    "dev": "nodemon api.js"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@mate-academy/eslint-config-react-typescript": "latest",
+    "@mate-academy/students-ts-config": "latest",
+    "@types/node": "^16.18.80",
+    "@types/react": "^18.2.55",
+    "@types/react-dom": "^18.2.19",
+    "@types/react-transition-group": "^4.4.12",
+    "eslint": "^7.32.0",
+    "gh-pages": "^6.1.1",
+    "nodemon": "^3.1.9",
+    "prettier": "^3.2.5",
+    "sass": "^1.72.0"
+  }
+}
