@@ -11,9 +11,7 @@ import { TodoFooter } from './components/TodoFooter';
 import { ErrorNotification } from './components/ErrorNotification';
 import { TodoList } from './components/TodoList';
 
-
 import * as clientTodo from './api/todos';
-
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -98,23 +96,24 @@ export const App: React.FC = () => {
   };
 
   const onDeleteAllCompleted = () => {
-    completedTodos.forEach(todo => onDeleteTodo(todo.id));
+    clientTodo.deleteAll(todos.filter(todo => todo.completed)).then(setTodos);
   };
 
   const onToggleAll = () => {
     if (todos.every(todo => todo.completed)) {
-      todos.forEach(todo => onUpdateTodo({ ...todo, completed: false }));
+      clientTodo
+        .updateAll(todos.map(todo => ({ ...todo, completed: false })))
+        .then(setTodos);
     } else {
-      todos.filter(todo => {
-        if (!todo.completed) {
-          onUpdateTodo({ ...todo, completed: true });
-        }
-      });
+      clientTodo
+        .updateAll(todos.map(todo => ({ ...todo, completed: true })))
+        .then(setTodos);
     }
   };
 
   useEffect(() => {
-    clientTodo.getTodos()
+    clientTodo
+      .getTodos()
       .then(setTodos)
       .catch(() => {
         setErrorMessage(ErrorMessage.UnableToLoad);
