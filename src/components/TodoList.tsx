@@ -5,8 +5,8 @@ import { TodoItem } from './TodoItem';
 type Props = {
   tempTodo: Todo | null;
   filteredTodos: Todo[];
-  loadingTodoIds: number[];
-  onDeleteTodo: (todoId: number) => void;
+  loadingTodoIds: string[];
+  onDeleteTodo: (todoId: string) => void;
   onUpdateTodo: (todoToUpdate: Todo) => Promise<void>;
 };
 

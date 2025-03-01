@@ -11,13 +11,13 @@ import { TodoFooter } from './components/TodoFooter';
 import { ErrorNotification } from './components/ErrorNotification';
 import { TodoList } from './components/TodoList';
 
-import * as clientTodo from './api/todos';
+import * as clientTodo from './api/client/todos';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [activeStatus, setActiveStatus] = useState(Status.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
+  const [loadingTodoIds, setLoadingTodoIds] = useState<string[]>([]);
   const [errorMessage, setErrorMessage] = useState<ErrorMessage>(
     ErrorMessage.Default,
   );
@@ -38,7 +38,7 @@ export const App: React.FC = () => {
 
   const onAddTodo = (title: string) => {
     setTempTodo({
-      id: 0,
+      id: '0',
       title,
       userId: clientTodo.USER_ID,
       completed: false,
@@ -77,7 +77,7 @@ export const App: React.FC = () => {
       });
   };
 
-  const onDeleteTodo = (todoId: number) => {
+  const onDeleteTodo = (todoId: string) => {
     setLoadingTodoIds(prevTodos => [...prevTodos, todoId]);
 
     clientTodo

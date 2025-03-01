@@ -2,13 +2,13 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useEffect, useRef, useState } from 'react';
 import cn from 'classnames';
-import { USER_ID } from '../api/todos';
+import { USER_ID } from '../api/client/todos';
 import { Todo } from '../types/Todo';
 
 type Props = {
   todo: Todo;
   isLoading: boolean;
-  onDeleteTodo: (todoId: number) => void;
+  onDeleteTodo: (todoId: string) => void;
   onUpdateTodo: (newTodo: Todo) => Promise<void>;
 };
 
@@ -128,7 +128,7 @@ export const TodoItem: React.FC<Props> = props => {
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': isLoading || todo.id === 0,
+          'is-active': isLoading || todo.id === "0",
         })}
       >
         <div className="modal-background has-background-white-ter" />
