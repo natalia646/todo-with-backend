@@ -1,13 +1,13 @@
 import * as services from '../services/todo.service.js';
 
-
-export const get = (req, res) => {
-  res.send(services.getAll());
+export const get = async (req, res) => {
+  const todos = await services.getAll();
+  res.send(todos);
 };
 
-export const getOne = (req, res) => {
+export const getOne = async (req, res) => {
   const { id } = req.params;
-  const todo = services.getById(id);
+  const todo = await services.getById(id);
 
   if (!todo) {
     res.sendStatus(404);
@@ -23,6 +23,8 @@ export const create = (req, res) => {
   if (!title) {
     res.sendStatus(422);
   }
+
+  
 
   res.send(services.create(title));
 

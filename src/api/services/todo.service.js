@@ -1,33 +1,21 @@
-// import pg from 'pg';
+import pg from 'pg';
 import { v4 as uuidv4 } from 'uuid';
+import 'dotenv/config';
 
+const { Client } = pg;
 
+const { DATABASE_PASSWORD, USER_ID, DATABASE_USER, DATABASE_NAME } =
+  process.env;
 
-// const { Client } = pg;
-// const app = express();
+const client = new Client({
+  host: 'localhost',
+  user: DATABASE_USER,
+  password: DATABASE_PASSWORD,
+  database: DATABASE_NAME,
+});
 
-// app.use(express.json());
+await client.connect();
 
-// const client = new Client({
-//   host: 'localhost',
-//   user: 'postgres',
-//   password: 'weroni4ka',
-//   database: 'postgres',
-// });
-
-// await client.connect();
-// const result = await client.query(`SELECT * FROM todos`);
-
-// console.log(result.rows);
-
-// export const getTodos = async () => {
-//   const result = await client.query(`SELECT * FROM todos`);
-
-//   return result.rows;
-// };
-
-
-const USER_ID = 2135;
 let todos = [
   {
     id: '2',
@@ -37,16 +25,22 @@ let todos = [
   },
 ];
 
-export const getAll = () => {
-  return todos;
+export const getAll = async () => {
+  const result = await client.query('SELECT * FROM todos');
+
+  return result.rows;
 };
 
-export const getById = (id) => {
-  const todo = todos.find(todo => todo.id === id) || null;
-  return todo;
+export const getById = async id => {
+  const result = await client.query(`
+    SELECT * FROM todos
+    WHERE id = '${id}'
+  `);
+
+  return result.rows || null;
 };
 
-export const create = (title) => {
+export const create = title => {
   const todo = {
     title,
     id: uuidv4(),
@@ -61,7 +55,7 @@ export const create = (title) => {
 
 export const update = ({ id, title, completed }) => {
   const todo = getById(id);
-  
+
   if (todo) {
     Object.assign(todo, { title, completed });
   }
@@ -69,11 +63,11 @@ export const update = ({ id, title, completed }) => {
   return todo;
 };
 
-export const remove = (id) => {
+export const remove = id => {
   todos = todos.filter(todo => todo.id !== id);
 };
 
-export const removeMany = (ids) => {
+export const removeMany = ids => {
   const newTodos = todos.filter(todo => !ids.includes(todo.id));
 
   todos = newTodos;
@@ -81,7 +75,7 @@ export const removeMany = (ids) => {
   return todos;
 };
 
-export const updateMany = (items) => {
+export const updateMany = items => {
   for (const { id, title, completed } of items) {
     const todo = getById(id);
 
@@ -92,5 +86,3 @@ export const updateMany = (items) => {
 
   return items;
 };
-
-
