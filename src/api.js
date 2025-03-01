@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-import { v4 as uuidv4 } from 'uuid';
+
+import * as services from './services/todo.service.js';
 
 const app = express();
 
@@ -8,6 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 const USER_ID = 2135;
+
 let todos = [
   {
     id: '2',
@@ -18,7 +20,19 @@ let todos = [
 ];
 
 app.get('/todos', (req, res) => {
-  res.send(todos);
+  res.send(services.getAll());
+});
+
+app.get('/todos/:id', (req, res) => {
+  const { id } = req.params;
+  const todo = services.getById(id);
+
+  if (!todo) {
+    res.sendStatus(404);
+    return;
+  }
+
+  res.send(todo);
 });
 
 app.post('/todos', (req, res) => {
@@ -28,49 +42,38 @@ app.post('/todos', (req, res) => {
     res.sendStatus(422);
   }
 
-  const todo = {
-    title,
-    id: uuidv4(),
-    completed: false,
-    userId: USER_ID,
-  };
-
-  todos.push(todo);
+  res.send(services.create(title));
 
   res.statusCode = 201;
-
-  res.send(todo);
 });
 
 app.delete('/todos/:id', (req, res) => {
   const { id } = req.params;
 
-  const newTodos = todos.filter(todo => todo.id !== id);
-
-  if (todos.length === newTodos.length) {
+  if (!services.getById(id)) {
     res.sendStatus(404);
     return;
   }
 
-  todos = newTodos;
+  const newTodos = services.remove(id);
 
-  res.send(todos);
+  res.send(newTodos);
 });
 
 app.put('/todos/:id', (req, res) => {
   const { id } = req.params;
   const { title, completed } = req.body;
 
-  const todo = todos.find(t => t.id === id);
+  const todo = services.getById(id);
 
   if (!todo) {
     res.sendStatus(404);
     return;
   }
 
-  Object.assign(todo, { title, completed });
+  const updatedTodo = services.update({ id, title, completed });
 
-  res.send(todo);
+  res.send(updatedTodo);
 });
 
 app.patch('/todos', (req, res) => {
@@ -86,7 +89,7 @@ app.patch('/todos', (req, res) => {
     const newTodos = todos.filter(todo => !ids.includes(todo.id));
 
     todos = newTodos;
-    res.send(todos)
+    res.send(todos);
     res.sendStatus(204);
 
     return;
@@ -103,26 +106,14 @@ app.patch('/todos', (req, res) => {
 
       if (!todo) continue;
       Object.assign(todo, { title, completed });
-    }  
-     
-    res.send(todos)
+    }
+
+    res.send(todos);
     res.sendStatus(204);
     return;
   }
 
   res.sendStatus(422);
-});
-
-app.get('/todos/:id', (req, res) => {
-  const { id } = req.params;
-  const todo = todos.find(t => t.id === id);
-
-  if (!todo) {
-    res.sendStatus(404);
-    return;
-  }
-
-  res.send(todo);
 });
 
 app.listen(3005, err => {
