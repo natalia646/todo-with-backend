@@ -1,88 +1,82 @@
-import pg from 'pg';
-import { v4 as uuidv4 } from 'uuid';
 import 'dotenv/config';
+import { sequelize } from '../db.js';
+import { DataTypes, Op, where } from 'sequelize';
 
-const { Client } = pg;
+const { USER_ID } = process.env;
 
-const { DATABASE_PASSWORD, USER_ID, DATABASE_USER, DATABASE_NAME } =
-  process.env;
-
-const client = new Client({
-  host: 'localhost',
-  user: DATABASE_USER,
-  password: DATABASE_PASSWORD,
-  database: DATABASE_NAME,
-});
-
-await client.connect();
-
-let todos = [
+const Todo = sequelize.define(
+  'Todo',
   {
-    id: '2',
-    title: 'dd',
-    completed: true,
-    userId: USER_ID,
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+    },
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    completed: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      field: 'created_at',
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    userId: {
+      type: DataTypes.NUMBER,
+      field: 'user_id',
+      defaultValue: USER_ID,
+    },
   },
-];
+  {
+    tableName: 'todos',
+    updatedAt: false,
+  },
+);
 
-export const getAll = async () => {
-  const result = await client.query('SELECT * FROM todos');
-
-  return result.rows;
+export const getAll = () => {
+  return Todo.findAll();
 };
 
 export const getById = async id => {
-  const result = await client.query(`
-    SELECT * FROM todos
-    WHERE id = '${id}'
-  `);
-
-  return result.rows || null;
+  return await Todo.findByPk(id);
 };
 
-export const create = title => {
-  const todo = {
-    title,
-    id: uuidv4(),
-    completed: false,
-    userId: USER_ID,
-  };
-
-  todos.push(todo);
-
-  return todo;
+export const create = async title => {
+  const newTodo = await Todo.create({ title });
+  return newTodo;
 };
 
-export const update = ({ id, title, completed }) => {
-  const todo = getById(id);
-
-  if (todo) {
-    Object.assign(todo, { title, completed });
-  }
-
-  return todo;
+export const update = async ({ id, title, completed }) => {
+  const updated = await Todo.update(
+    { title, completed },
+    { where: { id }, returning: true, plain: true },
+  );
+  console.log(updated);
+  return updated[1];
 };
 
 export const remove = id => {
-  todos = todos.filter(todo => todo.id !== id);
+  Todo.destroy({ where: { id } });
 };
 
-export const removeMany = ids => {
-  const newTodos = todos.filter(todo => !ids.includes(todo.id));
-
-  todos = newTodos;
-
-  return todos;
+export const removeMany = async ids => {
+  await Todo.destroy({
+    where: {
+      id: {
+        [Op.in]: ids,
+      },
+    },
+  });
 };
 
-export const updateMany = items => {
-  for (const { id, title, completed } of items) {
-    const todo = getById(id);
-
-    if (!todo) continue;
-
-    Object.assign(todo, { title, completed });
-  }
-
-  return items;
+export const updateMany = todos => {
+  Todo.beforeCreate(todos, {
+    updateOnDublicate: ['completed'],
+  });
 };

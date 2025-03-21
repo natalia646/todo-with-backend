@@ -42,11 +42,17 @@ export const App: React.FC = () => {
       title,
       userId: clientTodo.USER_ID,
       completed: false,
+      createdAt: '',
     });
 
     return clientTodo
-      .createTodos(title)
-      .then(todo => setTodos(currentTodos => [...currentTodos, todo]))
+      .createTodo(title)
+      .then(todo =>
+        setTodos(currentTodos => {
+          // console.log(todo);
+          return [...currentTodos, todo];
+        }),
+      )
       .catch(err => {
         setErrorMessage(ErrorMessage.UnableToAdd);
         throw err;

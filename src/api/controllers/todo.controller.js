@@ -17,32 +17,33 @@ export const getOne = async (req, res) => {
   res.send(todo);
 };
 
-export const create = (req, res) => {
+export const create = async (req, res) => {
   const { title } = req.body;
 
   if (!title) {
     res.sendStatus(422);
   }
 
-  
+  const respon = await services.create(title)
 
-  res.send(services.create(title));
+  console.log(respon)
+  res.send(respon);
 
   res.statusCode = 201;
 };
 
-export const update = (req, res) => {
+export const update = async (req, res) => {
   const { id } = req.params;
   const { title, completed, userId } = req.body;
 
-  const todo = services.getById(id);
+  const todo = await services.getById(id);
 
   if (!todo) {
     res.sendStatus(404);
     return;
   }
 
-  const updatedTodo = services.update({ id, title, completed, userId });
+  const updatedTodo = await services.update({ id, title, completed, userId });
 
   res.send(updatedTodo);
 };

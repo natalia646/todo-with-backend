@@ -1,6 +1,5 @@
 /* eslint-disable prettier/prettier */
 import { Todo } from '../../types/Todo';
-// import { client } from '../utils/fetchClient';
 import axios from 'axios';
 
 export const USER_ID = 2135;
@@ -10,8 +9,11 @@ export const getTodos = () => {
   return axios.get('/todos').then(res => res.data);
 };
 
-export const createTodos = (title: string) => {
-  return axios.post<Todo>(`/todos`, { title }).then(res => res.data);
+export const createTodo = (title: string) => {
+  return axios.post<Todo>(`/todos`, { title }).then(res => {
+    console.log(res.data);
+    return res.data;
+  });
 };
 
 export const deleteTodo = (id: string) => {
